@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  warehouse:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      JAVA_TOOL_OPTIONS: -DMYSQL_HOST=mysql -DMYSQL_DATABASE=warehouse
+    ports:
+      - 8080:8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: always
+    networks:
+      - net
+
+  mysql:
+    image: mysql/mysql-server:8.0.32
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: warehouse
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: somepassword
+    volumes:
+      - mysql-server-data:/var/lib/mysql
+      - ./mysql:/docker-entrypoint-initdb.d
+    restart: always
+    networks:
+      - net
+
+volumes:
+  mysql-server-data:
+
+networks:
+  net:
