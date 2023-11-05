@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     environment:
-      JAVA_TOOL_OPTIONS: -DMYSQL_HOST=mysql -DMYSQL_DATABASE=warehouse
+      JAVA_TOOL_OPTIONS: -DMYSQL_HOST=mysql -DMYSQL_DATABASE=warehouse -DOTEL_HOST=collector
     ports:
       - 8080:8080
     depends_on:
@@ -27,6 +27,26 @@ services:
     volumes:
       - mysql-server-data:/var/lib/mysql
       - ./mysql:/docker-entrypoint-initdb.d
+    restart: always
+    networks:
+      - net
+
+  collector:
+    image: otel/opentelemetry-collector:0.72.0
+    command: [ "--config=/etc/otel-collector-config.yml" ]
+    volumes:
+      - ./otel/config.yaml:/etc/otel-collector-config.yml
+    depends_on:
+      - jaeger-service
+    restart: always
+    networks:
+      - net
+
+  jaeger-service:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "14250"
     restart: always
     networks:
       - net
