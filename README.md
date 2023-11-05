@@ -10,12 +10,28 @@ Start the stack (requires application to be built)
 docker-compose up -d
 ```
 
-Add item to the warehouse
+Add new item to the warehouse
 ```sh
-curl http://localhost:8080/demo/add -d name=AK-47 -d type=rifle
+curl -XPOST http://localhost:8080/weapons -d name=AK-47 -d type=rifle
 ```
 
-Test all items in the warehouse
+Get all items in the warehouse
 ```sh
-curl localhost:8080/demo/all
+curl -XGET localhost:8080/weapons
+```
+
+
+Get details about the item in the warehouse
+```sh
+curl -XGET localhost:8080/weapons/1
+```
+
+Update the item in the warehouse
+```sh
+curl -XPUT localhost:8080/weapons/1 -d name=M16 -d type=rifle
+```
+
+Delete the item in the warehouse
+```sh
+curl -XDELETE localhost:8080/weapons/1
 ```
